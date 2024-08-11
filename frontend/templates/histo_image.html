@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Histopathological Image </title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            
+        }
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        h1 {
+            margin-top: 200px;
+            text-align: center;
+            color: #fffefe;
+            z-index: 1;
+            font-family: 'Times New Roman', Times, serif;
+            
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            z-index: 1;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+            padding: 10px;
+            /* border: 1px solid #000000; */
+            border-radius: 5px;
+            background-color: rgba(241, 237, 237, 0.6);
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            color: #fdf8f8;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bolder;
+            font-size:30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video autoplay muted loop>
+            <source src="static/videos/lungs.mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+        </video>
+    </div>
+    <h1>Predict Histopathological image </h1>
+    <form action="/histo_image" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload and Predict">
+    </form>
+    
+    <div id="result"></div>
+    <script>
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('file', e.target.file.files[0]);
+            const response = await fetch('/histo_image', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            document.getElementById('result').innerHTML = `<p>PREDICTED CLASS: ${data.result}</p>`;
+        });
+    </script>
+</body>
+</html>
